@@ -787,6 +787,26 @@ defmodule Amnesia.Table.Definition do
         end
 
         @doc """
+        Select records in the table using an Exquisite query, see
+        `Exquisite.match/2` and `mnesia:select` and generates Enumetable stream.
+
+        ## Options
+
+          * `select` - Exquisite selector spec
+          * `qualified' - whether to set a name for the record or not
+
+        """
+        # XXX no dirty version yet
+        defmacro stream_where(spec, options \\[]) do
+          new_options = Keyword.put(options, :where, spec)
+          quote do
+            T.stream_where(unquote(__MODULE__),
+              unquote(D.where(__MODULE__, @attributes, new_options)),
+              unquote(options))
+          end
+        end
+
+        @doc """
         Select records in the table using simple don't care values, see
         `mnesia:match_object`.
         """
