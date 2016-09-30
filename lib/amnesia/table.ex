@@ -695,7 +695,7 @@ defmodule Amnesia.Table do
     Amnesia.Table.Stream.new(name, type(name), dirty: true)
   end
 
-  def stream_where(name, spec, options) do
+  def stream_where(name, spec, options \\ []) do
     Amnesia.Table.StreamWhere.new(name, spec, options)
   end
 

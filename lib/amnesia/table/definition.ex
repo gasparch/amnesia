@@ -797,12 +797,14 @@ defmodule Amnesia.Table.Definition do
 
         """
         # XXX no dirty version yet
-        defmacro stream_where(spec, options \\[]) do
-          new_options = Keyword.put(options, :where, spec)
+        defmacro stream_where(spec, options \\ []) do
+          options = Keyword.put(options, :where, spec)
+          safe_options = Keyword.take(options, [:lock]) ++ [dirty: false]
           quote do
             T.stream_where(unquote(__MODULE__),
-              unquote(D.where(__MODULE__, @attributes, new_options)),
-              unquote(options))
+              unquote(D.where(__MODULE__, @attributes, options)),
+              unquote(safe_options)
+              )
           end
         end
 

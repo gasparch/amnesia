@@ -369,6 +369,35 @@ defmodule DatabaseTest do
     end == true)
   end
 
+  test "filtered enumerator works" do
+    Amnesia.transaction! do
+      %User{id: 1, name: "John"} |> User.write
+      %User{id: 2, name: "Lucas"} |> User.write
+      %User{id: 3, name: "David"} |> User.write
+    end
+
+    assert(Amnesia.transaction! do
+      r = User.stream_where id==2
+      res = r |> Enum.to_list() |> hd
+
+      assert res == %User{id: 2, name: "Lucas"}
+    end == true)
+
+    assert(Amnesia.transaction! do
+      r = User.stream_where id==2, select: {name, id}
+      res = r |> Enum.to_list() |> hd
+
+      assert res == {"Lucas", 2}
+    end == true)
+
+    assert(Amnesia.transaction! do
+      r = User.stream_where id>1, select: {name, id}
+      res = r |> Enum.to_list()
+
+      assert res == [{"Lucas", 2}, {"David", 3}]
+    end == true)
+  end
+
   test "autoincrement works" do
     Amnesia.transaction! do
       %User{name: "John"} |> User.write

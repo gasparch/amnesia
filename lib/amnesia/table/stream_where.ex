@@ -43,8 +43,8 @@ defmodule Amnesia.Table.StreamWhere do
     S.next(cont)
   end
 
-  defp read(cont) do
-    hd S.values cont
+  defp read(stream, cont) do
+    stream.table.coerce(hd S.values cont)
   end
 
   @doc false
@@ -65,7 +65,7 @@ defmodule Amnesia.Table.StreamWhere do
   end
 
   defp reduce(stream, cont, { :cont, acc }, fun) do
-    reduce(stream, next(cont), fun.(read(cont), acc), fun)
+    reduce(stream, next(cont), fun.(read(stream, cont), acc), fun)
   end
 
   defimpl Enumerable do
